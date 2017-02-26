@@ -34,7 +34,8 @@ def main():
             "--tty",
             "--volume", directory + ":/root",
             "--workdir", "/root",
-            "cs50/server"
+            "cs50/server",
+            "bash", "-l"
             ])
 
 if __name__ == "__main__":
