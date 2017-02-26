@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+import argparse
+import distutils.spawn
+import os
+import subprocess
+import sys
+
+def main():
+
+    # parse command-line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("directory", nargs="?", default=os.getcwd())
+    args = vars(parser.parse_args())
+
+    # check for docker
+    if not distutils.spawn.find_executable("docker"):
+        parser.error("docker not installed")
+
+    # ensure directory exists
+    directory = os.path.realpath(args["directory"])
+    if not os.path.isdir(directory):
+        parser.error("{}: no such directory".format(args["directory"]))
+
+    # update image
+    subprocess.call(["docker", "pull", "cs50/server"])
+
+    # mount directory in CS50 Server
+    subprocess.call([
+        "docker", "run",
+            "--interactive",
+            "--publish-all",
+            "--rm",
+            "--tty",
+            "--volume", directory + ":/root",
+            "--workdir", "/root",
+            "cs50/server"
+            ])
+
+if __name__ == "__main__":
+    main()
