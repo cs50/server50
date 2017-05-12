@@ -1,34 +1,21 @@
 language: python
-
-python: "3.4"
-
-# don't build tags
+python: '3.4'
 branches:
-  except: /^v\d/
-
-# build sdist
-script: make build
-
-# install twine for uploading to PyPI
-before_deploy: pip install twine
-
+  except: "/^v\\d/"
+install: true
+script: true
 deploy:
-
-  # create github release
-  - provider: script
-    script: 'curl --fail --data "{ \"tag_name\": \"v$(python setup.py --version)\", \"target_commitish\": \"$TRAVIS_COMMIT\", \"name\": \"v$(python setup.py --version)\" }" --user bot50:$GITHUB_TOKEN https://api.github.com/repos/$TRAVIS_REPO_SLUG/releases'
-    on:
-      branch: master
-
-  # deploy to PyPI
-  - provider: script
-
-    # upload sdist to PyPI
-    script: twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
-
-    # avoid stashing sdist
-    skip_cleanup: true
-
-    # deploy on commits to master
-    on:
-      branch: master
+- provider: script
+  script: 'curl --fail --data "{ \"tag_name\": \"v$(python setup.py --version)\",
+    \"target_commitish\": \"$TRAVIS_COMMIT\", \"name\": \"v$(python setup.py --version)\"
+    }" --user bot50:$GITHUB_TOKEN https://api.github.com/repos/$TRAVIS_REPO_SLUG/releases'
+  on:
+    branch: master
+- provider: pypi
+  user: "$PYPI_USERNAME"
+  password: "$PYPI_PASSWORD"
+  on:
+    branch: master
+notifications:
+  slack:
+    secure: Zz7Fos6RYgQ/rMBia8qMvDYshNE0UVX++8NA7tAmuvoPuA7ZErzGb4NTmlCFutLi9hysK5QmgQ1cH4m2Y4sP593wC3OWD3LIXyvtaUTLfEATaNc4Wec2wwkS21It4TIAHm4DfpU/tzS3tt7VyS4FdzNPQgZmDs3o04xVrz9GjGR/1vHJ1gsFcRA6NkHJceT0w63O1bnjzLtnYOsYLku0BottcjLeNe7k42ANWe3iR8sn4mdLETizRnGRyl8t2u9NOiv6eOigH8e+kh3Y81qYxsKxmVXanzu2LzuILABS+Ze54bvbeyH1y1cVrdphQ8oNgVhzo6GIOVAxI1Xn7IqKW9hh5jRs2qQXPaI9QzJgBGZxW9t+MIi0XWk1kE+P/uJRi1NfBErf5c8y68msFh2bAdAPjQOIdJlgT5nirQ/AAPIRMeFqXulNyCTb/+yStwERW6PujEE67PByofsx/ou0VCw0RAU4E4IgzMCGnf6y/sX1vlH+XG8JYoH2olEqc+D4sY+o4sn8GaWEDpmEew6wOEzGXI02s7um/SZv5rjk6GqwH8UxMSbYFo7p7vQJMB6GuSMib40VCc1ZryMU/BDj1VnA1E1zjShgTOlB0FCBLmFPxOh705UPr6xwAWBPXWMNMtufmYXvWOp2mutfg1v/AzwMxprdIkHmVT7RSz9H40c=
